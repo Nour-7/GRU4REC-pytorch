@@ -30,7 +30,7 @@ class Evaluation(object):
                 # torch.Tensor.item() to get a Python number from a tensor containing a single value
                 losses.append(loss.item())
                 recalls.append(recall)
-                mrrs.append(mrr)
+                mrrs.append(mrr.cpu())
         mean_losses = np.mean(losses)
         mean_recall = np.mean(recalls)
         mean_mrr = np.mean(mrrs)
