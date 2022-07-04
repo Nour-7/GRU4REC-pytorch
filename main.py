@@ -36,6 +36,8 @@ parser.add_argument('--save_dir', default='models', type=str)
 parser.add_argument('--data_folder', default='../Dataset/RecSys_Dataset_After/', type=str)
 parser.add_argument('--train_data', default='recSys15TrainOnly.txt', type=str)
 parser.add_argument('--valid_data', default='recSys15Valid.txt', type=str)
+parser.add_argument('--test_data', default='recSys15test.txt', type=str)
+
 parser.add_argument("--is_eval", action='store_true') #should be used during testing and eliminated during training
 parser.add_argument('--load_model', default=None,  type=str)
 parser.add_argument('--checkpoint_dir', type=str, default='checkpoint')
@@ -90,6 +92,8 @@ def main():
 
     train_data = lib.Dataset(os.path.join(args.data_folder, args.train_data))
     valid_data = lib.Dataset(os.path.join(args.data_folder, args.valid_data), itemmap=train_data.itemmap)
+    test_data = lib.Dataset(os.path.join(args.data_folder, args.test_data), itemmap=train_data.itemmap)
+
     make_checkpoint_dir()
         
     #set all the parameters according to the defined arguments
@@ -137,7 +141,7 @@ def main():
             model = checkpoint["model"]
             model.gru.flatten_parameters()
             evaluation = lib.Evaluation(model, loss_function, use_cuda=args.cuda, k = args.k_eval)
-            loss, recall, mrr = evaluation.eval(valid_data, batch_size)
+            loss, recall, mrr = evaluation.eval(test_data, batch_size)
             print("Final result: recall = {:.2f}, mrr = {:.2f}".format(recall, mrr))
         else:
             print("No Pretrained Model was found!")
