@@ -141,8 +141,8 @@ def main():
             model = checkpoint["model"]
             model.gru.flatten_parameters()
             evaluation = lib.Evaluation(model, loss_function, use_cuda=args.cuda, k = args.k_eval)
-            loss, recall, mrr = evaluation.eval(test_data, batch_size)
-            print("Final result: recall = {:.2f}, mrr = {:.2f}".format(recall, mrr))
+            loss, recall, prec, mrr = evaluation.eval(test_data, batch_size)
+            print("Final result: recall = {:.2f}, precision = {:.2f}, mrr = {:.2f}".format(recall, prec, mrr))
         else:
             print("No Pretrained Model was found!")
 

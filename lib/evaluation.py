@@ -14,6 +14,7 @@ class Evaluation(object):
         self.model.eval()
         losses = []
         recalls = []
+        precs = []
         mrrs = []
         dataloader = lib.DataLoader(eval_data, batch_size)
         with torch.no_grad():
@@ -25,14 +26,15 @@ class Evaluation(object):
                 logit, hidden = self.model(input, hidden)
                 logit_sampled = logit[:, target.view(-1)]
                 loss = self.loss_func(logit_sampled)
-                recall, mrr = lib.evaluate(logit, target, k=self.topk)
-
+                recall, prec, mrr = lib.evaluate(logit, target, k=self.topk)
                 # torch.Tensor.item() to get a Python number from a tensor containing a single value
                 losses.append(loss.item())
                 recalls.append(recall)
+                precs.append(prec)
                 mrrs.append(mrr.cpu())
         mean_losses = np.mean(losses)
         mean_recall = np.mean(recalls)
+        mean_prec = np.mean(precs)
         mean_mrr = np.mean(mrrs)
 
-        return mean_losses, mean_recall, mean_mrr
+        return mean_losses, mean_recall, mean_prec, mean_mrr

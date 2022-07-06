@@ -20,22 +20,19 @@ def get_recall(indices, targets): #recall --> wether next item in session is wit
 
 def get_precision(indices, targets):
     """
-    Calculates the precision score for the given predictions and targets
+    Calculates the precision score for the given predictions and targets at k = 1
     Args:
-        indices (Bxk): torch.LongTensor. top-k indices predicted by the model.
+        indices (B): torch.LongTensor. top-k indices predicted by the model.
         targets (B): torch.LongTensor. actual target indices.
     Returns:
-        recall (float): the recall score
+        precision (float): the precision  score
     """
-    targets = targets.view(-1, 1).expand_as(indices)
     hits = (targets == indices).nonzero()
     if len(hits) == 0:
         return 0
-    n_hits = (targets == indices).nonzero()[:, :-1].size(0)
-    recall = float(n_hits) / indices.size(0)
-    return recall
-
-
+    n_hits = (targets == indices).nonzero().size(0)
+    precision = float(n_hits) / targets.size(0)
+    return precision
 
 def get_mrr(indices, targets): #Mean Receiprocal Rank --> Average of rank of next item in the session.
     """
@@ -70,5 +67,6 @@ def evaluate(indices, targets, k=20):
     """
     _, indices = torch.topk(indices, k, -1)
     recall = get_recall(indices, targets)
+    prec = get_precision(indices[:, 0], targets)
     mrr = get_mrr(indices, targets)
-    return recall, mrr
+    return recall, prec, mrr
